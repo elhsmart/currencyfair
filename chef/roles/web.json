@@ -2,23 +2,10 @@
     "name": "web",
     "chef_type": "role",
     "json_class": "Chef::Role",
-    "default_attributes": {
-        "apache2": {
-            "listen_ports": ["80", "443"],
-            "default_modules": [
-                "status", "alias", "authz_host", "autoindex", "dir", "env",
-                "mime", "negotiation", "setenvif",
-                "ssl", "rewrite"
-            ]
-        }
-    },
+    "default_attributes": { },
     "description": "One-in-all development box",
     "run_list": [
-        "recipe[apt]",
-        "recipe[nginx]",
-        "recipe[php]",
-        "recipe[mysql]",
-        "recipe[beanstalkd]"
+        "recipe[currencyfair::default]"
     ],
     "env_run_lists" : { },
     "override_attributes": { }

@@ -6,6 +6,10 @@ PUBLIC_NETWORK_IP = "192.168.0.99"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hashicorp/precise32"
+  config.vm.hostname = "currencyfair"
+
+  config.berkshelf.enabled = true
+  config.berkshelf.berksfile_path = 'chef/cookbooks/currencyfair/Berksfile'
 
   config.vm.network "private_network", ip: "192.168.1.10"
   config.vm.network "public_network", ip: PUBLIC_NETWORK_IP
