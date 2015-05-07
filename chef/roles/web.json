@@ -17,7 +17,8 @@
         "recipe[apt]",
         "recipe[nginx]",
         "recipe[php]",
-        "recipe[mysql]"
+        "recipe[mysql]",
+        "recipe[beanstalkd]"
     ],
     "env_run_lists" : { },
     "override_attributes": { }
