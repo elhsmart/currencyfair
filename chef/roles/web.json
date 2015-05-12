@@ -2,11 +2,28 @@
     "name": "web",
     "chef_type": "role",
     "json_class": "Chef::Role",
-    "default_attributes": { },
+    "default_attributes": {
+
+    },
     "description": "One-in-all development box",
     "run_list": [
         "recipe[currencyfair::default]"
     ],
+
     "env_run_lists" : { },
-    "override_attributes": { }
+    "override_attributes": {
+        "php-fpm": {
+            "pools" : {
+                "default" : {
+                    "enable": true
+                },
+                "www" : {
+                    "enable": true,
+                    "process_manager": "dynamic",
+                    "listen": "/tmp/php-fpm.sock",
+                    "max_requests": 5000
+                }
+            }
+        }
+    }
 }
