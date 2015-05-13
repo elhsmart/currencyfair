@@ -27,10 +27,6 @@
 
         "beanstalkd": {
             "start_during_boot": "true"
-        },
-
-        "composer": {
-            "install_dir": "/srv/www/currencyfair.lan/lib"
         }
     }
 }

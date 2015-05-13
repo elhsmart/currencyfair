@@ -6,6 +6,7 @@
     require_once "System/Daemon.php";
 
     System_Daemon::setOption("appName", "cfdaemon");
+    System_Daemon::setOption("appExecutable", "cfdaemon");
     System_Daemon::setOption("appDescription", "Little daemon to handle CurrencyFair test app queue");
     System_Daemon::setOption("authorName", "Ed Tretyakov");
     System_Daemon::setOption("authorEmail", "elhsmart@gmail.com");

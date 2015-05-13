@@ -14,6 +14,13 @@ server {
     try_files $uri $uri/ /index.php?$args;
   }
 
+  location ~* ^.+\.(jpg|jpeg|gif|png|ico|css|pdf|ppt|txt|bmp|rtf|js|html)$ {
+    root <%= @root %>/assets;
+    access_log off; # не пишем логи
+#    expires 3d;
+  }
+
+
   location ~ \.php$ {
     <% if node['nginx']['client_max_body_size'] -%>
     client_max_body_size <%= node['nginx']['client_max_body_size'] %>;

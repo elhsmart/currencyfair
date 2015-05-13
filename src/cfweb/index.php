@@ -1,8 +1,41 @@
 <?php
 
 require 'vendor/autoload.php';
+use Pheanstalk\Pheanstalk;
+
+
 
 class ApiResponseHandler {
+
+    private static $config;
+
+    public static function getConfig() {
+        $app = \Slim\Slim::getInstance();
+
+        $config_error = false;
+        if(is_array(self::$config)) {
+            return self::$config;
+        }
+
+        $config_file = "cfweb.ini";
+        if(!is_file(__DIR__ . '/' . $config_file)) {
+            $config_error = true;
+        }
+
+        $config = parse_ini_file($config_file, true);
+
+        if(!$config) {
+            $config_error = true;
+        }
+
+        if($config_error) {
+            $app->response->setStatus(503);
+            $app->response->finalize();
+        }
+
+        self::$config = $config;
+        return self::$config;
+    }
 
     public static function echoResponse($status_code, $response) {
         $app = \Slim\Slim::getInstance();
@@ -130,7 +163,8 @@ $app = new \Slim\Slim(array(
 ));
 
 $app->get('/', function () {
-    echo "Hello! This is Slim!";
+    $app = \Slim\Slim::getInstance();
+    $app->render('main.php');
 });
 
 $app->post('/trade', function () {
@@ -152,7 +186,8 @@ $app->post('/trade', function () {
 
     if(strlen($requestBody) == 0 || !$validator->isJson($requestBody)) {
         ApiResponseHandler::echoResponse(400, array(
-            "error" => "JSON must be provided"
+            "status" => "error",
+            "description" => "JSON must be provided"
         ));
         $app->stop();
     }
@@ -172,13 +207,25 @@ $app->post('/trade', function () {
 
     if(count($errorFields) > 0) {
         ApiResponseHandler::echoResponse(400, array(
-            "error" => "Wrong parameters provided",
+            "status" => "error",
+            "description" => "Wrong parameters provided",
             "params" => $errorFields
         ));
         $app->stop();
     }
 
+    $config = ApiResponseHandler::getConfig();
+    $pheanstalk = new Pheanstalk($config['beanstalkd']['host'], $config['beanstalkd']['port']);
 
+    $pheanstalk
+        ->useTube($config['beanstalkd']['tube'])
+        ->put(json_encode($requestFields));
+
+    ApiResponseHandler::echoResponse(200, array(
+        "status" => "success",
+        "description" => "Your request successfully processed"
+    ));
+    $app->stop();
 });
 
 $app->run();

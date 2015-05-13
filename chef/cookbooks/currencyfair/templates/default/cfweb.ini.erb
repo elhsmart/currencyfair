@@ -1,0 +1,5 @@
+[beanstalkd]
+host = <%= node['beanstalkd']['opts']['l'] %>
+port = <%= node['beanstalkd']['opts']['p'] %>
+tube = <%= node['app']['tube'] %>
+timeout = <%= node['app']['timeout'] %>

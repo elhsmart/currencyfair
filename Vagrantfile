@@ -3,7 +3,7 @@
 
 VAGRANTFILE_API_VERSION = "2"
 PUBLIC_NETWORK_IP = "192.168.0.99"
-PRIVATE_NETWORK_IP = "192.168.1.10"
+PRIVATE_NETWORK_IP = "192.168.10.10"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "hashicorp/precise32"

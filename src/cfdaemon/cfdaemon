@@ -4,19 +4,19 @@
     require_once("common.php");
     require_once __DIR__ . '/vendor/autoload.php';
 
-    if(!is_file($config_file)) {
-        System_Daemon::log(self::LOG_CRIT, "Cannot find cfdaemon.ini");
+    if(!is_file(__DIR__ . '/' . $config_file)) {
+        System_Daemon::log(System_Daemon::LOG_CRIT, "Cannot find cfdaemon.ini");
         die(1);
     }
 
     $config = parse_ini_file($config_file, true);
 
     if(!$config) {
-        System_Daemon::log(self::LOG_CRIT, "Cannot parse cfdaemon.ini");
+        System_Daemon::log(System_Daemon::LOG_CRIT, "Cannot parse cfdaemon.ini");
         die(1);
     }
 
-    //System_Daemon::start();
+    System_Daemon::start();
 
     System_Daemon::log(System_Daemon::LOG_INFO, "Daemon: '".
         System_Daemon::getOption("appName").
@@ -28,17 +28,24 @@
     $pheanstalk = new Pheanstalk($config['beanstalkd']['host'], $config['beanstalkd']['port']);
 
     while(true) {
-
         $job = $pheanstalk
           ->watch($config['beanstalkd']['tube'])
           ->ignore('default')
           ->reserve($config['beanstalkd']['timeout']);
 
-        $data = $job->getData();
-        if(!is_json($data)) {
-            System_Daemon::log(System_Daemon::LOG_ERR, "Task data is not JSON");
-            continue;
+        if($job) {
+            $data = $job->getData();
+
+            if(!is_json($data) || strlen($data) == 0) {
+                System_Daemon::log(System_Daemon::LOG_ERR, "Task data is not JSON");
+                continue;
+            }
+
+            System_Daemon::log(System_Daemon::LOG_INFO, "New job received: " . $data);
+            $data = json_decode($data);
+
+            $pheanstalk->delete($job);
         }
 
-
+        System_Daemon::log(System_Daemon::LOG_INFO, "Loop ended");
     }

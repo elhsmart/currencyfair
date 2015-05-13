@@ -49,6 +49,10 @@ template DOCUMENT_ROOT + "/cfdaemon/cfdaemon.ini" do
   mode 0644
 end
 
+template DOCUMENT_ROOT + "/cfweb/cfweb.ini" do
+  mode 0644
+end
+
 nginx_site 'default' do
   enable false
 end
@@ -103,8 +107,5 @@ service "cfdaemon" do
   provider Chef::Provider::Service::Upstart
   subscribes :restart, resources(:bash => "cfdaemon_init")
   supports :restart => true, :start => true, :stop => true
-end
-
-service "cfdaemon" do
-  action [:enable, :start]
+  action :start
 end
