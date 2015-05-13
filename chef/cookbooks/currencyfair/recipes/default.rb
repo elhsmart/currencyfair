@@ -23,6 +23,7 @@ include_recipe 'php'
 include_recipe 'php-fpm'
 include_recipe 'nginx'
 include_recipe 'beanstalkd'
+include_recipe 'composer'
 
 template "#{node.nginx.dir}/sites-available/" + HOSTNAME do
   mode 0644
@@ -31,8 +32,21 @@ template "#{node.nginx.dir}/sites-available/" + HOSTNAME do
   variables({
     :name => 'currencyfair',
     :host => HOSTNAME,
-    :root => DOCUMENT_ROOT
+    :root => DOCUMENT_ROOT + "/cfweb"
   })
+end
+
+template "/etc/init/cfdaemon.conf" do
+  mode 0644
+  owner 'root'
+  group 'root'
+  variables({
+    :exec_path => DOCUMENT_ROOT + '/cfdaemon/cfdaemon'
+  })
+end
+
+template DOCUMENT_ROOT + "/cfdaemon/cfdaemon.ini" do
+  mode 0644
 end
 
 nginx_site 'default' do
@@ -60,4 +74,37 @@ end
 
 service "php-fpm" do
   notifies :reload, 'service[nginx]'
+end
+
+php_pear "System_Daemon" do
+  action :install
+end
+
+bash "cfdaemon_init" do
+  code <<-EOH
+    #{DOCUMENT_ROOT}/cfdaemon/cfdinit
+  EOH
+  creates "/etc/init.d/cfdaemon"
+end
+
+composer_project DOCUMENT_ROOT + "/cfdaemon" do
+    dev false
+    quiet true
+    action :install
+end
+
+composer_project DOCUMENT_ROOT + "/cfweb" do
+    dev false
+    quiet true
+    action :install
+end
+
+service "cfdaemon" do
+  provider Chef::Provider::Service::Upstart
+  subscribes :restart, resources(:bash => "cfdaemon_init")
+  supports :restart => true, :start => true, :stop => true
+end
+
+service "cfdaemon" do
+  action [:enable, :start]
 end

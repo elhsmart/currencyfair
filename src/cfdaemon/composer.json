@@ -1,0 +1,21 @@
+{
+    "name": "currencyfair/cfdaemon",
+    "description": "Tiny Daemon to handle CurrencyFair job application test queue",
+    "type": "executable",
+    "require": {
+        "pda/pheanstalk": "^3.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ed Tretyakob",
+            "email": "elhsmart@gmail.com"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "Pheanstalk\\": "../lib/Pheanstalk/"
+        }
+    }
+}

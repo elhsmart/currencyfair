@@ -1,2 +1,7 @@
 .idea/*
 .vagrant/*
+src/cfdaemon/cfdaemon.ini
+src/cfdaemon/composer.lock
+*vendor*
+src/lib*
+src/composer.lock

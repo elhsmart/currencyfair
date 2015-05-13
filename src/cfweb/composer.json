@@ -1,0 +1,23 @@
+{
+    "name": "currencyfair/app",
+    "description": "Job application test app",
+    "type": "\"application\"",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ed Tretyakov",
+            "email": "elhsmart@gmail.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "2.*",
+        "pda/pheanstalk": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Slim\\": "../lib/Slim/",
+            "Pheanstalk\\": "../lib/Pheanstalk/"
+
+        }
+    }
+}

@@ -9,7 +9,6 @@
     "run_list": [
         "recipe[currencyfair::default]"
     ],
-
     "env_run_lists" : { },
     "override_attributes": {
         "php-fpm": {
@@ -24,6 +23,14 @@
                     "max_requests": 5000
                 }
             }
+        },
+
+        "beanstalkd": {
+            "start_during_boot": "true"
+        },
+
+        "composer": {
+            "install_dir": "/srv/www/currencyfair.lan/lib"
         }
     }
 }

@@ -1,0 +1,44 @@
+#!/usr/bin/php -q
+<?php
+
+    require_once("common.php");
+    require_once __DIR__ . '/vendor/autoload.php';
+
+    if(!is_file($config_file)) {
+        System_Daemon::log(self::LOG_CRIT, "Cannot find cfdaemon.ini");
+        die(1);
+    }
+
+    $config = parse_ini_file($config_file, true);
+
+    if(!$config) {
+        System_Daemon::log(self::LOG_CRIT, "Cannot parse cfdaemon.ini");
+        die(1);
+    }
+
+    //System_Daemon::start();
+
+    System_Daemon::log(System_Daemon::LOG_INFO, "Daemon: '".
+        System_Daemon::getOption("appName").
+        "' spawned! This will be written to ".
+        System_Daemon::getOption("logLocation"));
+
+    use Pheanstalk\Pheanstalk;
+
+    $pheanstalk = new Pheanstalk($config['beanstalkd']['host'], $config['beanstalkd']['port']);
+
+    while(true) {
+
+        $job = $pheanstalk
+          ->watch($config['beanstalkd']['tube'])
+          ->ignore('default')
+          ->reserve($config['beanstalkd']['timeout']);
+
+        $data = $job->getData();
+        if(!is_json($data)) {
+            System_Daemon::log(System_Daemon::LOG_ERR, "Task data is not JSON");
+            continue;
+        }
+
+
+    }
