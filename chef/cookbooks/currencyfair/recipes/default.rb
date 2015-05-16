@@ -103,6 +103,18 @@ composer_project DOCUMENT_ROOT + "/cfweb" do
     action :install
 end
 
+composer_project DOCUMENT_ROOT + "/cfsocket" do
+    dev false
+    quiet true
+    action :install
+end
+
+composer_project DOCUMENT_ROOT + "/test" do
+    dev false
+    quiet true
+    action :install
+end
+
 service "cfdaemon" do
   provider Chef::Provider::Service::Upstart
   subscribes :restart, resources(:bash => "cfdaemon_init")

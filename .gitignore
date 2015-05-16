@@ -4,4 +4,4 @@ src/cfdaemon/cfdaemon.ini
 src/cfdaemon/composer.lock
 *vendor*
 src/lib*
-src/composer.lock
+src/*/composer.lock

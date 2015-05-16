@@ -34,11 +34,16 @@
     <!--[if IE]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="http://currencyfair.lan/js/ammap/ammap/ammap.js"></script>
     <script src="http://currencyfair.lan/js/ammap/ammap/maps/js/worldLow.js"></script>
     <script>
 
-        var map;
+        $(window).on('beforeunload', function(){
+            conn.close();
+        });
+
+        var map, conn;
 
         function writeDevInfo(event) {
             console.log(map.dataProvider);
@@ -87,7 +92,14 @@
             return result;
         }
 
-        setInterval("colorRandomCountry", 10000);
+        conn = new WebSocket('ws://currencyfair.lan:8080/update');
+        conn.onopen = function(e) {
+            console.log("Connection established!");
+        };
+
+        conn.onmessage = function(e) {
+            console.log(e.data);
+        };
     </script>
 </head>
 

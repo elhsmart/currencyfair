@@ -1,0 +1,21 @@
+{
+    "name": "currencyfair/cfsocket",
+    "description": "WebSockets server for CurrencyFair test app",
+    "type": "daemon",
+    "require": {
+        "wrench/wrench": "*",
+        "pda/pheanstalk": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CfSocket\\": "src/",
+            "Pheanstalk\\": "../lib/Pheanstalk/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ed Tretyakov",
+            "email": "elhsmart@gmail.com"
+        }
+    ]
+}
