@@ -15,7 +15,7 @@ class CfApplication {
     }
 
     public function onConnect($client) {
-        $this->clients[] = $client;
+        $this->clients[$client->getId()] = $client;
     }
 
     public function onUpdate() {
@@ -30,10 +30,16 @@ class CfApplication {
                         $sendto->send($data);
                     }
                 }
+
                 $this->beanstalk->delete($job);
             }
 
         } catch (\Exception $e) {}
+    }
+
+    public function onDisconnect($client) {
+        $id = $client->getId();
+        unset($this->clients[$id]);
     }
 
     public function onData() {

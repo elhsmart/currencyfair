@@ -9,10 +9,9 @@
             'currencyfair.lan'
         ),
         'connection_manager_options' => array(
-            'timeout_select_microsec'  => 200
+            'timeout_select_microsec'  => 20000
         )
     ));
-
 
     $pheanstalk = new Pheanstalk("127.0.0.1", "11300");
 

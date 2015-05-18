@@ -19,10 +19,7 @@
             width: 95%;
             height: 90%;
             margin-top:2.5%;
-            background: white;
-            border: 1px solid grey;
             display: inline-block;
-            border-radius: 5px;
         }
 
         #mapdiv {
@@ -35,81 +32,73 @@
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="http://currencyfair.lan/js/ammap/ammap/ammap.js"></script>
-    <script src="http://currencyfair.lan/js/ammap/ammap/maps/js/worldLow.js"></script>
-    <script>
+    <script src="http://currencyfair.lan/js/raphael/raphael.js"></script>
+    <script src="http://currencyfair.lan/js/raphael/world.js"></script>
 
-        $(window).on('beforeunload', function(){
-            conn.close();
-        });
-
-        var map, conn;
-
-        function writeDevInfo(event) {
-            console.log(map.dataProvider);
-            console.log(map.getObjectById('RO'));
-        }
-
-        AmCharts.ready(function() {
-            map = new AmCharts.AmMap();
-            map.path = "/js/ammap/ammap/";
-
-            map.balloon.color = "#000000";
-            var dataProvider = {
-                mapVar: AmCharts.maps.worldLow,
-                getAreasFromMap: true
-            };
-
-            map.dataProvider = dataProvider;
-            map.zoomControl.zoomControlEnabled = false;
-            map.zoomControl.panControlEnabled = false;
-
-            // developer mode related
-            map.developerMode = true;
-            map.mouseWheelZoomEnabled = false;
-            map.zoomOnDoubleClick = false;
-            map.showBalloonOnSelectedObject = false;
-
-            map.areasSettings.balloonText = false;
-            map.areasSettings.color = '#cccccc';
-            map.addListener("click", writeDevInfo);
-
-            map.write("mapdiv");
-        });
-
-        function colorRandomCountry() {
-            var country = map.getObjectById(pickRandomProperty(map.svgAreasById));
-            country.color = "#"+((1<<24)*Math.random()|0).toString(16);
-            map.validateData();
-        }
-
-        function pickRandomProperty(obj) {
-            var result;
-            var count = 0;
-            for (var prop in obj)
-                if (Math.random() < 1/++count)
-                    result = prop;
-            return result;
-        }
-
-        conn = new WebSocket('ws://currencyfair.lan:8080/update');
-        conn.onopen = function(e) {
-            console.log("Connection established!");
-        };
-
-        conn.onmessage = function(e) {
-            console.log(e.data);
-        };
-    </script>
 </head>
 
 <body id="home">
 
-    <div id="map">
-        <div id="mapdiv">
+<div id="map">
 
-        </div>
-    </div>
+</div>
+
+<script>
+
+    $(window).on('beforeunload', function(){
+        conn.close();
+    });
+
+    var map, conn;
+
+    conn = new WebSocket('ws://currencyfair.lan:8080/update');
+
+    conn.onopen = function(e) {
+        console.log("Connection established!");
+    };
+
+    conn.onmessage = function(e) {
+        var payload;
+
+        console.log("Message");
+        try {
+            payload = JSON.parse(e.data);
+        } catch (e) {
+            console.log("Non-JSON string as data provided.")
+            return;
+        }
+
+        paper.getById(countryPathIds[payload.originatingCountry]).attr({fill: "#bacabd"}).animate({fill: "#f0efeb"}, 300);
+    };
+
+    var countryPathIds = {};
+    var paper;
+
+    Raphael(document.getElementById("map"), "100%", "100%", "100%", "100%", function () {
+        var r = paper = this;
+
+        r.rect(0, 0, "100%", "100%", 10).attr({
+            stroke: "none",
+            fill: "0-#9bb7cb-#adc8da"
+        });
+
+        r.setStart();
+        var countryPath;
+
+        for (var country in worldmap.shapes) {
+            countryPath = r.path(worldmap.shapes[country]).attr({
+                    stroke: "#ccc6ae",
+                    fill: "#f0efeb",
+                    "stroke-opacity": 0.3})
+                .data("country", country);
+
+            countryPathIds[country] = countryPath.id;
+        }
+        var world = r.setFinish();
+        //world.scale(1.4,1.8,0,0)
+    });
+
+</script>
 
 </body>
 </html>
