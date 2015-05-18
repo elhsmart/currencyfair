@@ -1,9 +1,6 @@
 <?php
 
-    ini_set('include_path', ini_get('include_path').':..');
-
     error_reporting(E_ALL);
-    require_once "System/Daemon.php";
 
     System_Daemon::setOption("appName", "cfdaemon");
     System_Daemon::setOption("appExecutable", "cfdaemon");

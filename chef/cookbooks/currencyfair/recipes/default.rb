@@ -19,8 +19,10 @@ end
 
 include_recipe 'php'
 include_recipe 'php-fpm'
+include_recipe 'php::module_memcache'
 include_recipe 'nginx'
 include_recipe 'beanstalkd'
+include_recipe 'memcached'
 include_recipe 'composer'
 
 template "#{node.nginx.dir}/sites-available/" + HOSTNAME do
@@ -43,11 +45,24 @@ template "/etc/init/cfdaemon.conf" do
   })
 end
 
+template "/etc/init/cfsocket.conf" do
+  mode 0644
+  owner 'root'
+  group 'root'
+  variables({
+    :exec_path => DOCUMENT_ROOT + '/cfsocket/bin/cfsocket'
+  })
+end
+
 template DOCUMENT_ROOT + "/cfdaemon/conf/cfdaemon.ini" do
   mode 0644
 end
 
-template DOCUMENT_ROOT + "/cfweb/cfweb.ini" do
+template DOCUMENT_ROOT + "/cfsocket/conf/cfsocket.ini" do
+  mode 0644
+end
+
+template DOCUMENT_ROOT + "/cfweb/conf/cfweb.ini" do
   mode 0644
 end
 
@@ -78,15 +93,18 @@ service "php-fpm" do
   notifies :reload, 'service[nginx]'
 end
 
-php_pear "System_Daemon" do
-  action :install
-end
-
 bash "cfdaemon_init" do
   code <<-EOH
-    #{DOCUMENT_ROOT}/cfdaemon/cfdinit
+    #{DOCUMENT_ROOT}/cfdaemon/bin/cfdinit
   EOH
   creates "/etc/init.d/cfdaemon"
+end
+
+bash "cfsocket_init" do
+  code <<-EOH
+    #{DOCUMENT_ROOT}/cfsocket/bin/cfinit
+  EOH
+  creates "/etc/init.d/cfsocket"
 end
 
 composer_project DOCUMENT_ROOT + "/cfdaemon" do
@@ -117,5 +135,12 @@ service "cfdaemon" do
   provider Chef::Provider::Service::Upstart
   subscribes :restart, resources(:bash => "cfdaemon_init")
   supports :restart => true, :start => true, :stop => true
-  action :start
+  action :restart
+end
+
+service "cfsocket" do
+  provider Chef::Provider::Service::Upstart
+  subscribes :restart, resources(:bash => "cfsocket_init")
+  supports :restart => true, :start => true, :stop => true
+  action :restart
 end

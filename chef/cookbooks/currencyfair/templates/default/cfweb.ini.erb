@@ -1,5 +1,5 @@
 [beanstalkd]
 host = <%= node['beanstalkd']['opts']['l'] %>
 port = <%= node['beanstalkd']['opts']['p'] %>
-tube = <%= node['app']['tube'] %>
+tube = <%= node['app']['cfdaemon_tube'] %>
 timeout = <%= node['app']['timeout'] %>

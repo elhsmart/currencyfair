@@ -20,7 +20,7 @@ class ApiResponseHandler {
             $config_error = true;
         }
 
-        $config = parse_ini_file($config_file, true);
+        $config = parse_ini_file(__DIR__ . '/conf/' . $config_file, true);
 
         if(!$config) {
             $config_error = true;

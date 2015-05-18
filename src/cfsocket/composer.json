@@ -2,9 +2,11 @@
     "name": "currencyfair/cfsocket",
     "description": "WebSockets server for CurrencyFair test app",
     "type": "daemon",
+    "minimum-stability": "dev",
     "require": {
         "wrench/wrench": "*",
-        "pda/pheanstalk": "^3.0"
+        "pda/pheanstalk": "^3.0",
+        "pear-pear.php.net/System_Daemon": "*"
     },
     "autoload": {
         "psr-4": {
@@ -17,5 +19,9 @@
             "name": "Ed Tretyakov",
             "email": "elhsmart@gmail.com"
         }
-    ]
+    ],
+    "repositories": [{
+            "type": "pear",
+            "url": "https://pear.php.net"
+    }]
 }

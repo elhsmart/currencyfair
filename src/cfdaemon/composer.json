@@ -3,7 +3,8 @@
     "description": "Tiny Daemon to handle CurrencyFair job application test queue",
     "type": "executable",
     "require": {
-        "pda/pheanstalk": "^3.0"
+        "pda/pheanstalk": "^3.0",
+        "pear-pear.php.net/System_Daemon": "*"
     },
     "license": "MIT",
     "authors": [
@@ -17,5 +18,9 @@
         "psr-4": {
             "Pheanstalk\\": "../lib/Pheanstalk/"
         }
-    }
+    },
+    "repositories": [{
+        "type": "pear",
+        "url": "https://pear.php.net"
+    }]
 }

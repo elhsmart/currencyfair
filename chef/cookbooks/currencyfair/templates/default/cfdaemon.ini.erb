@@ -2,5 +2,11 @@
 host = <%= node['beanstalkd']['opts']['l'] %>
 port = <%= node['beanstalkd']['opts']['p'] %>
 cfdaemon_tube = <%= node['app']['cfdaemon_tube'] %>
-csocket_tube = <%= node['app']['cfsocket_tube'] %>
+cfsocket_tube = <%= node['app']['cfsocket_tube'] %>
 timeout = <%= node['app']['timeout'] %>
+
+[mysql]
+host =
+db = <%= node['mysql']['db'] %>
+user = <%= node['mysql']['user'] %>
+pass = <%= node['mysql']['pass'] %>

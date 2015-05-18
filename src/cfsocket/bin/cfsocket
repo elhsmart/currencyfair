@@ -1,0 +1,23 @@
+#!/usr/bin/php -q
+<?php
+    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/../src/common.php';
+
+    System_Daemon::start();
+
+    System_Daemon::log(System_Daemon::LOG_INFO, "Daemon: '".
+        System_Daemon::getOption("appName").
+        "' spawned! This will be written to ".
+        System_Daemon::getOption("logLocation"));
+
+    $server = new \Wrench\BasicServer('ws://0.0.0.0:8080', array(
+        'allowed_origins' => array(
+            'currencyfair.lan'
+        ),
+        'connection_manager_options' => array(
+            'timeout_select_microsec'  => 20000
+        )
+    ));
+
+    $server->registerApplication('update', new \CfSocket\CfApplication());
+    $server->run();

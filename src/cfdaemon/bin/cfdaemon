@@ -1,15 +1,17 @@
 #!/usr/bin/php -q
 <?php
 
-    require_once("common.php");
-    require_once __DIR__ . '/vendor/autoload.php';
+    use Pheanstalk\Pheanstalk;
 
-    if(!is_file(__DIR__ . '/' . $config_file)) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . "/../src/common.php";
+
+    if(!is_file(__DIR__ . '/../conf/' . $config_file)) {
         System_Daemon::log(System_Daemon::LOG_CRIT, "Cannot find cfdaemon.ini");
         die(1);
     }
 
-    $config = parse_ini_file($config_file, true);
+    $config = parse_ini_file(__DIR__ . '/../conf/' . $config_file, true);
 
     if(!$config) {
         System_Daemon::log(System_Daemon::LOG_CRIT, "Cannot parse cfdaemon.ini");
@@ -23,13 +25,11 @@
         "' spawned! This will be written to ".
         System_Daemon::getOption("logLocation"));
 
-    use Pheanstalk\Pheanstalk;
-
     $pheanstalk = new Pheanstalk($config['beanstalkd']['host'], $config['beanstalkd']['port']);
 
     while(true) {
         $job = $pheanstalk
-          ->watch($config['beanstalkd']['tube'])
+          ->watch($config['beanstalkd']['cfdaemon_tube'])
           ->ignore('default')
           ->reserve($config['beanstalkd']['timeout']);
 
@@ -38,11 +38,65 @@
 
             if(!is_json($data) || strlen($data) == 0) {
                 System_Daemon::log(System_Daemon::LOG_ERR, "Task data is not JSON");
+                $pheanstalk->delete($job);
                 continue;
             }
 
             System_Daemon::log(System_Daemon::LOG_INFO, "New job received: " . $data);
             $data = json_decode($data);
+
+            // Here we go with message processing. DB first.
+            try {
+                $db = new PDO('mysql:host=' . $config['mysql']['host'] . ';dbname=' . $config['mysql']['db'],
+                $config['mysql']['user'],
+                $config['mysql']['pass'],
+                    array(
+                        PDO::ATTR_PERSISTENT => true
+                    )
+                );
+
+                $sql = "INSERT INTO trades (
+                    user_id,
+                    currency_from,
+                    currency_to,
+                    amount_sell,
+                    amount_buy,
+                    rate,
+                    time_placed,
+                    originating_country
+                ) values (
+                    :userId,
+                    :currencyFrom,
+                    :currencyTo,
+                    :amountSell,
+                    :amountBuy,
+                    :rate,
+                    :timePlaced,
+                    :originatingCountry
+                )";
+
+                $stmt = $db->prepare($sql);
+
+                $stmt->bindParam(':userId', $data->userId, PDO::PARAM_INT);
+                $stmt->bindParam(':currencyFrom', $data->currencyFrom, PDO::PARAM_STR);
+                $stmt->bindParam(':currencyTo', $data->currencyTo, PDO::PARAM_STR);
+                $stmt->bindParam(':amountSell', $data->amountSell, PDO::PARAM_STR);
+                $stmt->bindParam(':amountBuy', $data->amountBuy, PDO::PARAM_STR);
+                $stmt->bindParam(':rate', $data->rate, PDO::PARAM_STR);
+                $stmt->bindParam(':timePlaced', date("Y-m-d H:i:s", strtotime($data->timePlaced)), PDO::PARAM_STR);
+                $stmt->bindParam(':originatingCountry', $data->originatingCountry, PDO::PARAM_STR);
+
+                $stmt->execute();
+
+            } catch (PDOException $e) {
+                System_Daemon::log(System_Daemon::LOG_ERR, "MySQL connection problems. Do not drop the job and wait.");
+                System_Daemon::log(System_Daemon::LOG_ERR, "MySQL message: " . $e->getMessage());
+                sleep(1);
+                continue;
+            }
+
+            //And quick pass through memcache to display fresh "trends" for countries
+
 
             $pheanstalk->delete($job);
         }

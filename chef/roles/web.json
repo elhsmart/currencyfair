@@ -7,6 +7,7 @@
     },
     "description": "One-in-all development box",
     "run_list": [
+        "recipe[currencyfair::mysql]",
         "recipe[currencyfair::default]"
     ],
     "env_run_lists" : { },
@@ -27,6 +28,12 @@
 
         "beanstalkd": {
             "start_during_boot": "true"
+        },
+
+        "mysql": {
+            "server_root_password": "rootpass",
+            "server_debian_password": "debpass",
+            "server_repl_password": "replpass"
         }
     }
 }

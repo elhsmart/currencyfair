@@ -9,3 +9,8 @@ default['app']['timeout'] = 5
 
 default['app']['cfsocket_tube'] = 'currencyfair_cfsocket'
 
+default['mysql']['db'] = 'app';
+default['mysql']['host'] = 'localhost';
+default['mysql']['user'] = default['currencyfair']['user']
+default['mysql']['pass'] = 'some_user_password'
+default['mysql']['seed_file'] ='/tmp/create-tables.sql'
