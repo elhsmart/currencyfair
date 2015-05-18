@@ -49,7 +49,7 @@
         conn.close();
     });
 
-    var map, conn;
+    var map, conn, mapsize = {"x": 1000, "y": 400};
 
     conn = new WebSocket('ws://currencyfair.lan:8080/update');
 
@@ -68,7 +68,9 @@
             return;
         }
 
-        paper.getById(countryPathIds[payload.originatingCountry]).attr({fill: "#bacabd"}).animate({fill: "#f0efeb"}, 300);
+        paper.getById(countryPathIds[payload.originatingCountry])
+            .attr({fill: "#bacabd"})
+            .animate({fill: "#f0efeb"}, 300);
     };
 
     var countryPathIds = {};

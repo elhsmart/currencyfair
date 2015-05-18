@@ -3,7 +3,6 @@ source "https://supermarket.chef.io"
 metadata
 
 cookbook "beanstalkd"
-cookbook "mysql"
 cookbook "nginx", "~> 2.6"
 cookbook "php"
 cookbook "php-fpm", git: "https://github.com/yevgenko/cookbook-php-fpm.git"

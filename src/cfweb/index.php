@@ -3,8 +3,6 @@
 require 'vendor/autoload.php';
 use Pheanstalk\Pheanstalk;
 
-
-
 class ApiResponseHandler {
 
     private static $config;
@@ -18,7 +16,7 @@ class ApiResponseHandler {
         }
 
         $config_file = "cfweb.ini";
-        if(!is_file(__DIR__ . '/' . $config_file)) {
+        if(!is_file(__DIR__ . '/conf/' . $config_file)) {
             $config_error = true;
         }
 

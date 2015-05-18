@@ -17,8 +17,6 @@ user node['currencyfair']['user'] do
   shell '/bin/bash'
 end
 
-include_recipe 'mysql::client'
-include_recipe 'mysql::server'
 include_recipe 'php'
 include_recipe 'php-fpm'
 include_recipe 'nginx'
@@ -41,11 +39,11 @@ template "/etc/init/cfdaemon.conf" do
   owner 'root'
   group 'root'
   variables({
-    :exec_path => DOCUMENT_ROOT + '/cfdaemon/cfdaemon'
+    :exec_path => DOCUMENT_ROOT + '/cfdaemon/bin/cfdaemon'
   })
 end
 
-template DOCUMENT_ROOT + "/cfdaemon/cfdaemon.ini" do
+template DOCUMENT_ROOT + "/cfdaemon/conf/cfdaemon.ini" do
   mode 0644
 end
 
