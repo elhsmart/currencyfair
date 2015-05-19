@@ -40,6 +40,30 @@ template "#{node.nginx.dir}/sites-available/" + HOSTNAME do
   })
 end
 
+composer_project DOCUMENT_ROOT + "/cfdaemon" do
+    dev false
+    quiet true
+    action :install
+end
+
+composer_project DOCUMENT_ROOT + "/cfweb" do
+    dev false
+    quiet true
+    action :install
+end
+
+composer_project DOCUMENT_ROOT + "/cfsocket" do
+    dev false
+    quiet true
+    action :install
+end
+
+composer_project DOCUMENT_ROOT + "/test" do
+    dev false
+    quiet true
+    action :install
+end
+
 template "/etc/init/cfdaemon.conf" do
   mode 0644
   owner 'root'
@@ -113,30 +137,6 @@ bash "cfsocket_init" do
     #{DOCUMENT_ROOT}/cfsocket/bin/cfinit
   EOH
   creates "/etc/init.d/cfsocket"
-end
-
-composer_project DOCUMENT_ROOT + "/cfdaemon" do
-    dev false
-    quiet true
-    action :install
-end
-
-composer_project DOCUMENT_ROOT + "/cfweb" do
-    dev false
-    quiet true
-    action :install
-end
-
-composer_project DOCUMENT_ROOT + "/cfsocket" do
-    dev false
-    quiet true
-    action :install
-end
-
-composer_project DOCUMENT_ROOT + "/test" do
-    dev false
-    quiet true
-    action :install
 end
 
 service "cfdaemon" do
