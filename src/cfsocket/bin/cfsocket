@@ -5,19 +5,23 @@
 
     System_Daemon::start();
 
+    $config = CfSocket\AppCommon::getConfig();
     System_Daemon::log(System_Daemon::LOG_INFO, "Daemon: '".
         System_Daemon::getOption("appName").
         "' spawned! This will be written to ".
         System_Daemon::getOption("logLocation"));
 
-    $server = new \Wrench\BasicServer('ws://0.0.0.0:8080', array(
+    $server = new \Wrench\BasicServer('ws://' . $config['wrench']['host']. ':' . $config['wrench']['port'], array(
         'allowed_origins' => array(
-            'currencyfair.lan'
+            $config['wrench']['domain']
         ),
+
         'connection_manager_options' => array(
-            'timeout_select_microsec'  => 20000
+            'timeout_select_microsec'  => 200000
         )
     ));
 
     $server->registerApplication('update', new \CfSocket\CfApplication());
+    $server->registerApplication('trends', new \CfSocket\TrendsApplication());
+
     $server->run();

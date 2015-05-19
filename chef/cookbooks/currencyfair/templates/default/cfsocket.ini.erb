@@ -3,3 +3,12 @@ host = <%= node['beanstalkd']['opts']['l'] %>
 port = <%= node['beanstalkd']['opts']['p'] %>
 cfsocket_tube = <%= node['app']['cfsocket_tube'] %>
 timeout = <%= node['app']['timeout'] %>
+
+[memcache]
+host = <%= node['memcache']['host'] %>
+port = <%= node['memcache']['port'] %>
+
+[wrench]
+host = <%= node['wrench']['host'] %>
+port = <%= node['wrench']['port'] %>
+domain = <%= node['currencyfair']['domain'] %>

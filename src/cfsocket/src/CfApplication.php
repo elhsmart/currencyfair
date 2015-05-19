@@ -13,37 +13,10 @@ class CfApplication {
     protected $beanstalk;
 
     public function __construct() {
-        $this->config = $this->getConfig();
+        $this->config = AppCommon::getConfig();
         $this->beanstalk = new Pheanstalk($this->config['beanstalkd']['host'], $this->config['beanstalkd']['port']);
         $this->beanstalk->useTube($this->config['beanstalkd']['cfsocket_tube']);
-    }
 
-    public static function getConfig() {
-
-        $config_error = false;
-        if(is_array(self::$config)) {
-            return self::$config;
-        }
-
-        $config_file = "cfsocket.ini";
-        if(!is_file(__DIR__ . '/../conf/' . $config_file)) {
-            $config_error = true;
-            \System_Daemon::log(\System_Daemon::LOG_CRIT, "Cannot load config file.");
-        }
-
-        $config = parse_ini_file(__DIR__ . '/../conf/' . $config_file, true);
-
-        if(!$config) {
-            $config_error = true;
-            \System_Daemon::log(\System_Daemon::LOG_CRIT, "Cannot parse config file.");
-        }
-
-        if($config_error) {
-            exit(1);
-        }
-
-        self::$config = $config;
-        return self::$config;
     }
 
     public function onConnect($client) {
@@ -53,6 +26,7 @@ class CfApplication {
     public function onUpdate() {
         try {
             $job = $this->beanstalk->peekReady();
+            var_dump($job);
 
             if ($job) {
                 $data = $job->getData();
@@ -66,7 +40,9 @@ class CfApplication {
                 $this->beanstalk->delete($job);
             }
 
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+        }
     }
 
     public function onDisconnect($client) {

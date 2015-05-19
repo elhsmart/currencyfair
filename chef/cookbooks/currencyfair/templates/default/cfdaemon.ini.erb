@@ -6,7 +6,11 @@ cfsocket_tube = <%= node['app']['cfsocket_tube'] %>
 timeout = <%= node['app']['timeout'] %>
 
 [mysql]
-host =
+host = localhost
 db = <%= node['mysql']['db'] %>
 user = <%= node['mysql']['user'] %>
 pass = <%= node['mysql']['pass'] %>
+
+[memcache]
+host = <%= node['memcache']['host'] %>
+port = <%= node['memcache']['port'] %>

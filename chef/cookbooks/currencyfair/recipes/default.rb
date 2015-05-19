@@ -19,11 +19,15 @@ end
 
 include_recipe 'php'
 include_recipe 'php-fpm'
-include_recipe 'php::module_memcache'
+include_recipe 'php::module_curl'
 include_recipe 'nginx'
 include_recipe 'beanstalkd'
 include_recipe 'memcached'
 include_recipe 'composer'
+
+package "php5-memcache" do
+  action :install
+end
 
 template "#{node.nginx.dir}/sites-available/" + HOSTNAME do
   mode 0644
@@ -63,6 +67,10 @@ template DOCUMENT_ROOT + "/cfsocket/conf/cfsocket.ini" do
 end
 
 template DOCUMENT_ROOT + "/cfweb/conf/cfweb.ini" do
+  mode 0644
+end
+
+template DOCUMENT_ROOT + "/test/conf/cftest.ini" do
   mode 0644
 end
 

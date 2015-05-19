@@ -94,7 +94,7 @@ class EndpointParamsHandler {
         if(in_array($currencyName, $this->currenciesAvailable)) {
             return true;
         }
-        $this->lastError = "Currency provided not in valid currencies list. Must be one of: " . implode(", ", $this->currrenciesAvailable);
+        $this->lastError = "Currency provided not in valid currencies list. Must be one of: " . implode(", ", $this->currenciesAvailable);
         return false;
     }
 

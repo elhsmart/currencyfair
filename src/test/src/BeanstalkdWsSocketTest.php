@@ -6,7 +6,6 @@ use Pheanstalk\Pheanstalk;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-
 $pheanstalk = new Pheanstalk("127.0.0.1", "11300");
 
 function getRandomTestingJob() {
@@ -42,13 +41,5 @@ function getRandomTestingJob() {
     return $testingJob;
 }
 
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
-$pheanstalk->useTube("cf")->put(getRandomTestingJob());
+$pheanstalk->useTube("currencyfair_cfsocket")->put(getRandomTestingJob());
+

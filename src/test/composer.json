@@ -3,7 +3,8 @@
     "description": "Collection of test scripts for CurrencyFair job test application",
     "require": {
         "phpunit/phpunit": "^4.6",
-        "pda/pheanstalk": "^3.0"
+        "pda/pheanstalk": "^3.0",
+        "guzzlehttp/guzzle": "*"
     },
     "authors": [
         {

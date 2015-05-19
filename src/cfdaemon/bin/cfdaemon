@@ -97,6 +97,44 @@
 
             //And quick pass through memcache to display fresh "trends" for countries
 
+            $MC = new Memcache;
+            $MC->connect($config['memcache']['host'], $config['memcache']['port']);
+
+            $country = $MC->get($data->originatingCountry);
+            System_Daemon::log(System_Daemon::LOG_INFO, "MC message: " . $country);
+
+            if(empty($country)) {
+                $country = new stdClass;
+            } else {
+                $country = json_decode($country);
+            }
+
+            $country->tradesCount += 1;
+
+            if(!isset($country->topPairs)) {
+                $country->topPairs = array();
+            } else {
+                $country->topPairs = (array)$country->topPairs;
+            }
+
+            //Keep our counts safe even trade was in reverse way
+            $pair = $data->currencyFrom . "/" . $data->currencyTo;
+            $pairReverse = $data->currencyTo . "/" . $data->currencyFrom;
+            $usedPair = $pair;
+
+            if(isset($country->topPairs[$pairReverse])) {
+                $usedPair = $pairReverse;
+            }
+
+            $country->topPairs[$usedPair] += 1;
+
+            $MC->set($data->originatingCountry, json_encode($country));
+            $MC->close();
+
+            //pass job to the wssocket through beanstalkd
+            $pheanstalk
+                ->useTube($config['beanstalkd']['cfsocket_tube'])
+                ->put($job->getData());
 
             $pheanstalk->delete($job);
         }
