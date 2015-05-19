@@ -6,7 +6,7 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-HOSTNAME = "currencyfair.lan"
+HOSTNAME = node['currencyfair']['domain']
 DOCUMENT_ROOT = "/srv/www/" + HOSTNAME
 
 group node['currencyfair']['group']
@@ -29,7 +29,7 @@ package "php5-memcache" do
   action :install
 end
 
-template "#{node.nginx.dir}/sites-available/" + HOSTNAME do
+template "#{node.nginx.dir}/sites-available/currencyfair.host" do
   mode 0644
   owner node.nginx.user
   group node.nginx.user
@@ -117,7 +117,7 @@ path_chunks.each do |chunk|
   end
 end
 
-nginx_site HOSTNAME do
+nginx_site 'currencyfair.host' do
   enable true
 end
 
